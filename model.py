@@ -72,8 +72,57 @@ def env_step(state: torch.Tensor, action: int, room_size: int = 8) -> tuple[torc
 
    return next_state, next_observation
 
-# Step 6 - collect_random_transitions (not yet solved)
-# TODO: implement
+# Step 6 - collect_random_transitions
+def collect_random_transitions(
+    num_transitions: int, room_size: int = 8, seed: int = 0
+) -> dict:
+    if seed is not None:
+        torch.manual_seed(seed)
+
+    # 1. Pre-allocate all output tensors
+    observations = torch.empty(
+        (num_transitions, 1, room_size, room_size), dtype=torch.float32
+    )
+    actions = torch.empty((num_transitions,), dtype=torch.long)
+    next_observations = torch.empty(
+        (num_transitions, 1, room_size, room_size), dtype=torch.float32
+    )
+    states = torch.empty((num_transitions, 2), dtype=torch.float32)
+    next_states = torch.empty((num_transitions, 2), dtype=torch.float32)
+
+    # 2. Reset initial environment state:
+    # env_reset returns (state, obs), so unpack as (state, obs)
+    state, obs = env_reset(room_size=room_size, seed=seed)
+
+    # 3. Roll out transitions
+    for i in range(num_transitions):
+        action = torch.randint(0, 4, ()).item()
+
+        # env_step returns (next_state, next_observation)
+        next_state, next_obs = env_step(state, action, room_size=room_size)
+
+        observations[i] = obs
+        actions[i] = action
+        next_observations[i] = next_obs
+        states[i] = state
+        next_states[i] = next_state
+
+        state = next_state
+        obs = next_obs
+
+    return {
+        "observations": observations,
+        "actions": actions,
+        "next_observations": next_observations,
+        "states": states,
+        "next_states": next_states,
+    }
+# ```[cite: 5, 8]
+
+# ### Why this resolves all errors
+# 1. `state, obs = env_reset(...)` keeps `state` as the `(2,)` coordinate tensor and `obs` as the `(1, H, W)` image tensor[cite: 5, 8].
+# 2. `next_state, next_obs = env_step(...)` matches the signature `(next_state, next_observation)` from your Step 5[cite: 8].
+# 3. `state[1]` inside `apply_action` will receive the coordinate tensor, eliminating the `IndexError`[cite: 7, 9].
 
 # Step 7 - build_transition_dataset (not yet solved)
 # TODO: implement
