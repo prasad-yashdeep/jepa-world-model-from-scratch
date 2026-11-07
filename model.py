@@ -58,7 +58,7 @@ def env_reset(room_size: int = 8, seed: int | None = None) -> tuple[torch.Tensor
 
     obs= render_observation(state,room_size)
 
-    print(state.shape,obs.shape)
+    # print(state.shape,obs.shape)
 
     return state, obs
 
