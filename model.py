@@ -62,8 +62,15 @@ def env_reset(room_size: int = 8, seed: int | None = None) -> tuple[torch.Tensor
 
     return state, obs
 
-# Step 5 - env_step (not yet solved)
-# TODO: implement
+# Step 5 - env_step
+def env_step(state: torch.Tensor, action: int, room_size: int = 8) -> tuple[torch.Tensor, torch.Tensor]:
+    # TODO: Advance the env by one action; return (next_state, next_observation).
+
+
+   next_state = apply_action(state, action, room_size)
+   next_observation = render_observation(next_state , room_size)
+
+   return next_state, next_observation
 
 # Step 6 - collect_random_transitions (not yet solved)
 # TODO: implement
