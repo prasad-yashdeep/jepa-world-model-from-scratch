@@ -9,9 +9,13 @@ import numpy as np
 # Step 1 - init_env_state
 def init_env_state(room_size: int = 8, seed: int | None = None) -> torch.Tensor:
     # TODO: Initialize a random agent position state inside a square 2D room...
+    
+    if seed != None:
 
+        torch.manual_seed(seed)
+        coord = torch.randint(low = 0, high = room_size, size= (2,))
+        return coord.float()
 
-    torch.manual_seed(seed)
     coord = torch.randint(low = 0, high = room_size, size= (2,))
     return coord.float()
 
@@ -46,8 +50,17 @@ def render_observation(state: torch.Tensor, room_size: int = 8) -> torch.Tensor:
     obs[0,y,x ] = 1.0 
     return obs
 
-# Step 4 - env_reset (not yet solved)
-# TODO: implement
+# Step 4 - env_reset
+def env_reset(room_size: int = 8, seed: int | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+    # TODO: Reset the environment by sampling a new state and its observation.
+
+    state = init_env_state(room_size,seed)
+
+    obs= render_observation(state,room_size)
+
+    print(state.shape,obs.shape)
+
+    return state, obs
 
 # Step 5 - env_step (not yet solved)
 # TODO: implement
