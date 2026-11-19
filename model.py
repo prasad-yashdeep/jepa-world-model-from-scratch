@@ -130,8 +130,40 @@ def build_transition_dataset(num_transitions: int = 512, room_size: int = 8, see
     
     return collect_random_transitions(num_transitions, room_size, seed)
 
-# Step 8 - init_encoder_params (not yet solved)
-# TODO: implement
+# Step 8 - init_encoder_params
+def init_encoder_params(obs_channels: int = 1, room_size: int = 8, latent_dim: int = 32, seed: int = 0) -> dict:
+    # TODO: Initialize parameters of a small CNN encoder that maps pixel observations to latent embeddings.
+
+    torch.manual_seed(seed)
+
+    # Spatial formula for k=3, s=2, p=1: floor((H_in + 2*1 - 3) / 2) + 1 = floor((H_in - 1) / 2) + 1
+    # (If your starter code uses stride=1 for conv1 per the screenshot, set h1 = room_size)
+    # conv1: stride=1, padding=1, kernel=3 -> preserves room_size
+    h1 = (room_size + 2 * 1 - 3) // 1 + 1
+    # conv2: stride=2, padding=1, kernel=3 -> halves spatial size
+    h2 = (h1 + 2 * 1 - 3) // 2 + 1
+
+    fc_in = 32 * h2 * h2
+    
+    conv1_w = (torch.randn(16, obs_channels, 3, 3) * 0.1).requires_grad_(True)
+    conv1_b = torch.zeros(16, requires_grad=True)
+
+    conv2_w = (torch.randn(32, 16, 3, 3) * 0.1).requires_grad_(True)
+    conv2_b = torch.zeros(32, requires_grad=True)
+
+    fc_w = (torch.randn(latent_dim, fc_in) * 0.1).requires_grad_(True)
+
+    fc_b = torch.zeros(latent_dim, requires_grad=True)
+
+
+    return {
+        "conv1_w": conv1_w,
+        "conv1_b": conv1_b,
+        "conv2_w": conv2_w,
+        "conv2_b": conv2_b,
+        "fc_w": fc_w,
+        "fc_b": fc_b,
+        }
 
 # Step 9 - encoder_forward (not yet solved)
 # TODO: implement
